@@ -22,6 +22,10 @@ def health():
 def home():
     return FileResponse(ROOT / "index.html")
 
+@application.get("/recording-archive.js")
+def archive_js():
+    return FileResponse(ROOT / "recording-archive.js", media_type="application/javascript")
+
 @application.get("/meeting-analysis")
 def meeting_analysis():
     return FileResponse(ROOT / "meeting-analysis.html")
