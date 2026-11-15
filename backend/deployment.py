@@ -7,7 +7,33 @@ import base64
 import hmac
 import os
 
-from .app import app as application
+from pathlib import Path
+from fastapi import FastAPI
+from fastapi.responses import FileResponse, JSONResponse
+
+ROOT = Path(__file__).resolve().parents[1]
+application = FastAPI(title="VoiceTag Preview")
+
+@application.get("/health")
+def health():
+    return {"status": "ok", "mode": "interface-preview"}
+
+@application.get("/")
+def home():
+    return FileResponse(ROOT / "index.html")
+
+@application.get("/meeting-analysis")
+def meeting_analysis():
+    return FileResponse(ROOT / "meeting-analysis.html")
+
+@application.get("/speaker-lab")
+def speaker_lab():
+    return FileResponse(ROOT / "speaker-lab.html")
+
+@application.post("/api/{path:path}")
+async def unavailable(path: str):
+    return JSONResponse({"detail": "IA indisponible sur cette prévisualisation légère."}, status_code=503)
+
 
 
 async def app(scope, receive, send):
