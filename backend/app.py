@@ -8,7 +8,10 @@ from fastapi import FastAPI, File, HTTPException, UploadFile
 from fastapi.responses import FileResponse
 from faster_whisper import WhisperModel
 
+from .speaker_api import router as speaker_router
+
 app = FastAPI(title="VoiceTag local API", version="0.2.0")
+app.include_router(speaker_router)
 ROOT = Path(__file__).resolve().parent.parent
 MAX_BYTES = 30 * 1024 * 1024
 ALLOWED = {".webm", ".wav", ".mp3", ".m4a", ".mp4", ".ogg", ".flac"}
