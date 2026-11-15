@@ -2,11 +2,9 @@
 import os
 from functools import lru_cache
 
-from faster_whisper import WhisperModel
-
-
 @lru_cache(maxsize=1)
 def model():
+    from faster_whisper import WhisperModel
     return WhisperModel(
         os.getenv("WHISPER_MODEL", "small"),
         device=os.getenv("WHISPER_DEVICE", "cpu"),
