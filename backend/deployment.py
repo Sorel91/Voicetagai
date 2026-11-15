@@ -22,6 +22,10 @@ def health():
 def home():
     return FileResponse(ROOT / "index.html")
 
+@application.get("/browser-transcription.js")
+def browser_transcription_js():
+    return FileResponse(ROOT / "browser-transcription.js", media_type="application/javascript")
+
 @application.get("/recording-archive.js")
 def archive_js():
     return FileResponse(ROOT / "recording-archive.js", media_type="application/javascript")
