@@ -31,6 +31,11 @@ def home():
     return FileResponse(ROOT / "index.html")
 
 
+@app.get("/speaker-lab")
+def speaker_lab():
+    return FileResponse(ROOT / "speaker-lab.html")
+
+
 @app.get("/health")
 def health():
     return {"status": "ok", "transcription": "faster-whisper", "speaker_recognition": False}
