@@ -35,6 +35,11 @@ def home():
     return FileResponse(ROOT / "index.html")
 
 
+@app.get("/meeting-analysis")
+def meeting_analysis_page():
+    return FileResponse(ROOT / "meeting-analysis.html")
+
+
 @app.get("/speaker-lab")
 def speaker_lab():
     return FileResponse(ROOT / "speaker-lab.html")
