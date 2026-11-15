@@ -8,7 +8,9 @@ import hmac
 import os
 
 from pathlib import Path
-from fastapi import FastAPI
+from fastapi import FastAPI, File, UploadFile, HTTPException
+from fastapi.concurrency import run_in_threadpool
+import tempfile
 from fastapi.responses import FileResponse, JSONResponse
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -37,6 +39,31 @@ def meeting_analysis():
 @application.get("/speaker-lab")
 def speaker_lab():
     return FileResponse(ROOT / "speaker-lab.html")
+
+@application.post("/api/transcribe")
+async def transcribe_preview(audio: UploadFile = File(...)):
+    """Optional server-side transcription; disabled unless explicitly configured."""
+    if os.getenv("ENABLE_WHISPER", "false").lower() != "true":
+        raise HTTPException(503, "Le moteur Whisper n'est pas activé sur ce serveur.")
+    suffix = Path(audio.filename or "").suffix.lower()
+    if suffix not in {".webm", ".wav", ".mp3", ".m4a", ".mp4", ".ogg", ".flac"}:
+        raise HTTPException(415, "Format audio non pris en charge")
+    path = None
+    try:
+        with tempfile.NamedTemporaryFile(suffix=suffix, delete=False) as tmp:
+            path = tmp.name
+            size = 0
+            while chunk := await audio.read(1024 * 1024):
+                size += len(chunk)
+                if size > 30 * 1024 * 1024:
+                    raise HTTPException(413, "Enregistrement supérieur à 30 Mo")
+                tmp.write(chunk)
+        from .app_transcription import transcribe_file
+        return await run_in_threadpool(transcribe_file, path)
+    finally:
+        await audio.close()
+        if path:
+            Path(path).unlink(missing_ok=True)
 
 @application.post("/api/{path:path}")
 async def unavailable(path: str):
