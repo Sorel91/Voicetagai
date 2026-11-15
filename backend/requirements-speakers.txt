@@ -1,0 +1,3 @@
+-r requirements.txt
+resemblyzer>=0.1.4,<0.2
+numpy>=1.24,<3
