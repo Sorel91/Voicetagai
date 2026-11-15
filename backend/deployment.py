@@ -18,7 +18,7 @@ application = FastAPI(title="VoiceTag Preview")
 
 @application.get("/health")
 def health():
-    return {"status": "ok", "mode": "interface-preview"}
+    return {"status": "ok", "mode": "interface-preview", "transcription": "whisper-enabled" if os.getenv("ENABLE_WHISPER", "false").lower() == "true" else "unavailable"}
 
 @application.get("/")
 def home():
